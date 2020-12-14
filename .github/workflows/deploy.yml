@@ -7,5 +7,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-go@v1
-    - run: go get
+      with:
+        go-version: '1.14.0'
+    - run: go get github.com/aws/aws-lambda-go/lambda
+    - run: go get github.com/stinkyfingers/lambdify
     - run: go build -o reversevideoapi main.go
