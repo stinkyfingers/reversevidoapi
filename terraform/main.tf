@@ -74,7 +74,7 @@ resource "aws_lambda_function" "server_lambda" {
 
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_dir = "../reversevideoapi"
+  source_file = "reversevideoapi"
   output_path = "lambda.zip"
 }
 
