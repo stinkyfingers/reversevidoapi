@@ -34,10 +34,10 @@ jobs:
         run: terraform init -input=false -backend-config="bucket=remotebackend/reversevideoapi/terraform.tfstate" ./terraform
         shell: bash
       - id: validate
-        run: terraform validate ./terraform
+        run: terraform validate terraform
         shell: bash
       - id: plan
-        run: terraform plan -input=false -out terraform.plan ./terraform
+        run: terraform plan -input=false -out terraform.plan terraform
         shell: bash
       - id: apply
         run: terraform apply -input=false terraform.plan
