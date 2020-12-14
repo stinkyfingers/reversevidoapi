@@ -106,7 +106,7 @@ resource "aws_lb_target_group_attachment" "server_lambda" {
 
 resource "aws_lb_listener_rule" "beanieboo_server_lambda" {
   listener_arn = data.terraform_remote_state.stinkyfingers.outputs.stinkyfingers_https_listener
-  priority = 28
+  priority = 32
   action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.server_lambda.arn
