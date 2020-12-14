@@ -57,7 +57,7 @@ resource "aws_lambda_function" "server_lambda" {
   function_name = "reversevideoserverlambda"
   role          = aws_iam_role.iam_for_lambda.arn
   handler       = "reversevideoapi"
-  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
+  # source_code_hash = data.archive_file.lambda_zip.output_base64sha256
 
   runtime = "go1.x"
   timeout = "300"
@@ -69,11 +69,11 @@ resource "aws_lambda_function" "server_lambda" {
   }
 }
 
-data "archive_file" "lambda_zip" {
-  type        = "zip"
-  source_file = "./reversevideoapi"
-  output_path = "lambda.zip"
-}
+# data "archive_file" "lambda_zip" {
+#   type        = "zip"
+#   source_file = "./reversevideoapi"
+#   output_path = "lambda.zip"
+# }
 
 resource "aws_lambda_permission" "server_lambda" {
   statement_id  = "AllowExecutionFromApplicationLoadBalancer"
