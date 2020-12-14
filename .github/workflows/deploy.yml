@@ -34,6 +34,9 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: build-output
+      - id: wha
+        run: ls
+        shell: bash
       - id: init
         run: terraform init -input=false -backend-config="bucket=remotebackend" terraform
         shell: bash
