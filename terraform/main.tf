@@ -59,7 +59,7 @@ resource "aws_lambda_function" "server_lambda" {
   filename      = "lambda.zip"
   function_name = "reversevideoserverlambda"
   role          = aws_iam_role.iam_for_lambda.arn
-  handler       = "serverlambda.handler"
+  handler       = "reversevideoapi"
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
 
   runtime = "go1.x"
