@@ -5,7 +5,6 @@ terraform {
     bucket = "remotebackend"
     key     = "reversevideoapi/terraform.tfstate"
     region  = "us-west-1"
-    profile = "jds"
   }
 }
 
@@ -13,7 +12,6 @@ terraform {
 
 provider "aws" {
   region = var.region
-  profile = "jds"
 }
 
 /* vars */
@@ -30,7 +28,6 @@ data "terraform_remote_state" "stinkyfingers" {
     bucket  = "remotebackend"
     key     = "stinkyfingers/terraform.tfstate"
     region  = "us-west-1"
-    profile = "jds"
   }
 }
 
