@@ -5,6 +5,7 @@ terraform {
     bucket = "remotebackend"
     key     = "reversevideoapi/terraform.tfstate"
     region  = "us-west-1"
+    profile = "jds"
   }
 }
 
@@ -12,6 +13,7 @@ terraform {
 
 provider "aws" {
   region = var.region
+  profile = "jds"
 }
 
 /* vars */
@@ -28,6 +30,7 @@ data "terraform_remote_state" "stinkyfingers" {
     bucket  = "remotebackend"
     key     = "stinkyfingers/terraform.tfstate"
     region  = "us-west-1"
+    profile = "jds"
   }
 }
 
@@ -57,7 +60,7 @@ resource "aws_lambda_function" "server_lambda" {
   function_name = "reversevideoserverlambda"
   role          = aws_iam_role.iam_for_lambda.arn
   handler       = "serverlambda.handler"
-  source_code_hash = filebase64sha256("lambda.zip")
+  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
 
   runtime = "go1.x"
   timeout = "300"
