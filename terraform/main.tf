@@ -83,7 +83,7 @@ resource "aws_lambda_permission" "server_lambda" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.server_lambda.arn
   principal     = "elasticloadbalancing.amazonaws.com"
-  source_arn = aws_lb_target_group.server_lambda.arn
+  source_arn    = aws_lb_target_group.server_lambda.arn
 }
 
 # IAM
@@ -104,7 +104,7 @@ resource "aws_lb_target_group_attachment" "server_lambda" {
   depends_on        = [aws_lambda_permission.server_lambda]
 }
 
-resource "aws_lb_listener_rule" "beanieboo_server_lambda" {
+resource "aws_lb_listener_rule" "server_lambda" {
   listener_arn = data.terraform_remote_state.stinkyfingers.outputs.stinkyfingers_https_listener
   priority = 32
   action {

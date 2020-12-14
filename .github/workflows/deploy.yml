@@ -9,7 +9,7 @@ jobs:
     - uses: actions/setup-go@v1
     - run: go get github.com/aws/aws-lambda-go/lambda
     - run: go get github.com/stinkyfingers/lambdify
-    - run: go build -o reversevideoapi main.go
+    - run: GOOS=linux go build -o reversevideoapi main.go
     - id: archive-build
       uses: actions/upload-artifact@v2
       with:
