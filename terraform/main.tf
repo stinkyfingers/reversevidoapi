@@ -1,5 +1,4 @@
 /* Backend */
-
 terraform {
   backend "s3" {
     bucket = "remotebackend"
@@ -10,14 +9,12 @@ terraform {
 }
 
 /* Providers */
-
 provider "aws" {
   region = var.region
   profile = "jds"
 }
 
 /* vars */
-
 variable "region" {
   type = string
   default = "us-west-1"
