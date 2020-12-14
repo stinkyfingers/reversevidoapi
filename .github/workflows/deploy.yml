@@ -10,3 +10,30 @@ jobs:
     - run: go get github.com/aws/aws-lambda-go/lambda
     - run: go get github.com/stinkyfingers/lambdify
     - run: go build -o reversevideoapi main.go
+    - id: archive-build
+      uses: actions/upload-artifact@v2
+      with:
+        name: build-output
+        path: reversevideoapi
+        retention-days: 1
+
+  terraform:
+    runs-on: ubuntu-latest
+    needs: compile
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 0.12.12
+      - id: init
+        run: terraform init -input=false -backend-config="bucket=remotebackend/reversevideoapi/terraform.tfstate" ./terraform
+        shell: bash
+      - id: validate
+        run: terraform validate ./terraform
+        shell: bash
+      - id: plan
+        run: terraform plan -input=false -out terraform.plan ./terraform
+        shell: bash
+      - id: apply
+        run: terraform apply -input=false terraform.plan
+        shell: bash
