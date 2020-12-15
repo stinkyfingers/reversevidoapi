@@ -53,7 +53,7 @@ EOF
 }
 
 resource "aws_lambda_function" "server_lambda" {
-  filename      = "lambda.zip"
+  filename      = "${path.module}/lambda.zip"
   function_name = "reversevideoserverlambda"
   role          = aws_iam_role.iam_for_lambda.arn
   handler       = "reversevideoapi"
@@ -69,11 +69,11 @@ resource "aws_lambda_function" "server_lambda" {
   }
 }
 
-# data "archive_file" "lambda_zip" {
-#   type        = "zip"
-#   source_file = "./reversevideoapi"
-#   output_path = "lambda.zip"
-# }
+data "archive_file" "lambda_zip" {
+  type        = "zip"
+  source_file = "${path.module}/reversevideoapi"
+  output_path = "${path.module}/lambda.zip"
+}
 
 resource "aws_lambda_permission" "server_lambda" {
   statement_id  = "AllowExecutionFromApplicationLoadBalancer"
