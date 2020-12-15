@@ -53,23 +53,23 @@ jobs:
         run: terraform apply -input=false terraform.plan
         shell: bash
 
-    lambda:
-      runs-on: ubuntu-latest
-      needs: terraform
-      steps:
-        - uses: actions/checkout@v2
-        - uses: aws-actions/configure-aws-credentials@v1
-          with:
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            aws-region: us-west-1
-        - id: download-artifacts
-          uses: actions/download-artifact@v2
-          with:
-            name: build-output
-        - id: update
-          run: aws lambda update-function-code --function-name reversevideoserverlambda --zip-file fileb://lambda.zip
-          shell: bash
-        - id: publish
-          run: aws lambda publish-version --function-name reversevideoserverlambda
-          shell: bash
+  lambda:
+    runs-on: ubuntu-latest
+    needs: terraform
+    steps:
+      - uses: actions/checkout@v2
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-1
+      - id: download-artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: build-output
+      - id: update
+        run: aws lambda update-function-code --function-name reversevideoserverlambda --zip-file fileb://lambda.zip
+        shell: bash
+      - id: publish
+        run: aws lambda publish-version --function-name reversevideoserverlambda
+        shell: bash
