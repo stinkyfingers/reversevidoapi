@@ -13,6 +13,9 @@ jobs:
     - run: chmod 0777 reversevideoapi
     # - run: zip -j lambda.zip reversevideoapi
     - run: ls -latr
+    - id: try
+      run: ./reversevideoapi
+      shell: bash
     - id: archive-build
       uses: actions/upload-artifact@v2
       with:
