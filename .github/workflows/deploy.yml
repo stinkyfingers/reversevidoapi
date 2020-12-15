@@ -12,6 +12,7 @@ jobs:
     - run: GOOS=linux go build -o reversevideoapi main.go
     - run: chmod +x reversevideoapi
     - run: zip -j lambda.zip reversevideoapi
+    - run: ls -latr
     - id: archive-build
       uses: actions/upload-artifact@v2
       with:
