@@ -10,7 +10,7 @@ jobs:
     - run: go get github.com/aws/aws-lambda-go/lambda
     - run: go get github.com/stinkyfingers/lambdify
     - run: GOOS=linux go build -o reversevideoapi main.go
-    - run: chmod +x reversevideoapi
+    - run: chmod 0777 reversevideoapi
     # - run: zip -j lambda.zip reversevideoapi
     - run: ls -latr
     - id: archive-build
