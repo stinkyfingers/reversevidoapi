@@ -70,6 +70,9 @@ jobs:
       - id: zip
         run: zip -j lambda.zip reversevideoapi
         shell: bash
+      - id: chmod
+        run: chmod 777 lambda.zip
+        shell: bash
       - id: update
         run: aws lambda update-function-code --function-name reversevideoserverlambda --zip-file fileb://lambda.zip
         shell: bash
