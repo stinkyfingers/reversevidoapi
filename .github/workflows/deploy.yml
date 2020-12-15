@@ -17,7 +17,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: build-output
-        path: lambda.zip
+        path: reversevideoapi
         retention-days: 1
 
   terraform:
