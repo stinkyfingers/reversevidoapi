@@ -11,7 +11,7 @@ jobs:
     - run: go get github.com/stinkyfingers/lambdify
     - run: GOOS=linux go build -o reversevideoapi main.go
     - run: chmod +x reversevideoapi
-    - run: zip lambda.zip reversevideoapi
+    - run: zip -j lambda.zip reversevideoapi
     - id: archive-build
       uses: actions/upload-artifact@v2
       with:
