@@ -67,6 +67,9 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: build-output
+      - id: zip
+        run: zip -j lambda.zip reversevideoapi
+        shell: bash
       - id: update
         run: aws lambda update-function-code --function-name reversevideoserverlambda --zip-file fileb://lambda.zip
         shell: bash
