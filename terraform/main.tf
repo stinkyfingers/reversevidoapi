@@ -143,5 +143,5 @@ resource "aws_lb_listener_rule" "server_lambda" {
 # S3
 resource "aws_s3_bucket" "reversevideo" {
   bucket = "reversevideo"
-  acl  "private"
+  acl = "private"
 }
