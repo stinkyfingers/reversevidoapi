@@ -106,7 +106,7 @@ resource "aws_iam_policy" "reverse_video_s3" {
         "s3:*"
       ],
       "Effect": "Allow",
-      "Resource": "${aws_lambda_function.server_lambda}"
+      "Resource": "${aws_lambda_function.server_lambda.arn}"
     }
   ]
 }
