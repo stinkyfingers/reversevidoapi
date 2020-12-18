@@ -89,7 +89,7 @@ resource "aws_iam_role_policy_attachment" "cloudwatch-attach" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-resource "aws_iam_role_policy_attachment" "cloudwatch-attach" {
+resource "aws_iam_role_policy_attachment" "reverse-video-s3" {
   role       = aws_iam_role.iam_for_lambda.name
   policy_arn = aws_iam_policy.reverse_video_s3.arn
 }
