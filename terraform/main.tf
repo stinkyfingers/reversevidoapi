@@ -89,6 +89,30 @@ resource "aws_iam_role_policy_attachment" "cloudwatch-attach" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+resource "aws_iam_role_policy_attachment" "cloudwatch-attach" {
+  role       = aws_iam_role.iam_for_lambda.name
+  policy_arn = aws_iam_policy.reverse_video_s3.arn
+}
+
+resource "aws_iam_policy" "reverse_video_s3" {
+  name = "reverse-video-s3"
+  description = "gives lambda permissions for s3 bucket"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "s3:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "${aws_lambda_function.server_lambda}"
+    }
+  ]
+}
+EOF
+}
+
 # ALB
 resource "aws_lb_target_group" "server_lambda" {
   name        = "reversevideoapiserverlambda"
@@ -114,4 +138,10 @@ resource "aws_lb_listener_rule" "server_lambda" {
     }
   }
   depends_on = [aws_lb_target_group.server_lambda]
+}
+
+# S3
+resource "aws_s3_bucket" "reversevideo" {
+  bucket = "reversevideo"
+  acl  "private"
 }
