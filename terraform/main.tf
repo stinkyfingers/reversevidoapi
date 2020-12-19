@@ -145,6 +145,8 @@ resource "aws_s3_bucket" "reversevideo" {
   bucket = "reversevideo"
   acl = "private"
   lifecycle_rule {
+    id = "expiration"
+    enabled = true
     expiration {
       days = 1
     }
