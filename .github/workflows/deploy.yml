@@ -14,6 +14,7 @@ jobs:
       - uses: actions/setup-go@v1
       - run: go get github.com/aws/aws-lambda-go/lambda
       - run: go get github.com/stinkyfingers/lambdify
+      - run: go get github.com/stinkyfingers/reversevideoapi
       - run: GOOS=linux go build -o reversevideoapi main.go
       - run: chmod 0777 reversevideoapi
       - id: archive-build
