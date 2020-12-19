@@ -6,6 +6,7 @@ import (
 
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/stinkyfingers/lambdify"
+	"github.com/stinkyfingers/reversevideoapi/handlers"
 )
 
 func main() {
@@ -15,7 +16,10 @@ func main() {
 
 func mux() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/handle", handler)
+
+	mux.HandleFunc("/upload", handlers.UploadHandler)
+	mux.HandleFunc("/download", handlers.DownloadHandler)
+
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		log.Print("health called")
 		_, err := w.Write([]byte("OK"))
@@ -25,8 +29,4 @@ func mux() http.Handler {
 		}
 	})
 	return mux
-}
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte(r.URL.String()))
 }

@@ -20,7 +20,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: build-output
-          path: reversevideoapi
+          path: |
+            reversevideoapi
+            ffmpeg
           retention-days: 1
 
   terraform:
@@ -71,7 +73,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-1
       - id: zip
-        run: zip -j lambda.zip reversevideoapi
+        run: zip -j lambda.zip reversevideoapi ffmpeg
         shell: bash
       - id: chmod
         run: chmod 777 lambda.zip
