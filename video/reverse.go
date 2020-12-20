@@ -67,10 +67,10 @@ func GetVideo(key string) (io.ReadCloser, error) {
 }
 
 func Cleanup(key string) error {
-	err := os.Remove(filepath.Join(reversedDir, key))
-	if err != nil {
-		return err
-	}
+	// err := os.Remove(filepath.Join(reversedDir, key))
+	// if err != nil {
+	// 	return err
+	// }
 
 	return cleanup()
 }
