@@ -27,38 +27,38 @@ jobs:
   #           ffmpeg
   #         retention-days: 1
 
-  terraform:
-    # needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      # - id: download-artifacts
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: build-output
-      - uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 0.12.12
-      - uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-west-1
-      - id: wha
-        run: ls
-        shell: bash
-      - id: init
-        run: terraform init -input=false -backend-config="bucket=remotebackend" terraform
-        shell: bash
-      - id: validate
-        run: terraform validate terraform
-        shell: bash
-      - id: plan
-        run: terraform plan -input=false -out terraform.plan terraform
-        shell: bash
-      - id: apply
-        run: terraform apply -input=false terraform.plan
-        shell: bash
+  # terraform:
+  #   # needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     # - id: download-artifacts
+  #     #   uses: actions/download-artifact@v2
+  #     #   with:
+  #     #     name: build-output
+  #     - uses: hashicorp/setup-terraform@v1
+  #       with:
+  #         terraform_version: 0.12.12
+  #     - uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: us-west-1
+  #     - id: wha
+  #       run: ls
+  #       shell: bash
+  #     - id: init
+  #       run: terraform init -input=false -backend-config="bucket=remotebackend" terraform
+  #       shell: bash
+  #     - id: validate
+  #       run: terraform validate terraform
+  #       shell: bash
+  #     - id: plan
+  #       run: terraform plan -input=false -out terraform.plan terraform
+  #       shell: bash
+  #     - id: apply
+  #       run: terraform apply -input=false terraform.plan
+  #       shell: bash
 
   heroku:
     runs-on: ubuntu-latest

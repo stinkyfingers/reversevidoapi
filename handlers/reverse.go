@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -46,5 +45,5 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Println("SENT VIDEO")
+	go video.Cleanup(key)
 }
