@@ -64,12 +64,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: akhileshns/heroku-deploy@v3.7.8  
+      - uses: akhileshns/heroku-deploy@v3.7.8
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: "reversevideoapi"
           heroku_email: "john_shenk@hotmail.com"
-          use_docker: true
+          usedocker: true
   # lambda:
   #   needs: [build, terraform]
   #   runs-on: ubuntu-latest
