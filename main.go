@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 
 	"github.com/stinkyfingers/reversevideoapi/handlers"
 )
@@ -36,6 +37,23 @@ func mux() http.Handler {
 			"bar",
 		}
 		err := json.NewEncoder(w).Encode(&foo)
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+	})
+	mux.HandleFunc("/ffmpeg", func(w http.ResponseWriter, r *http.Request) {
+		out, err := exec.Command("ffmpeg", "-version").CombinedOutput()
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		ffmpeg := struct {
+			Version string `json:"version"`
+		}{
+			string(out),
+		}
+		err = json.NewEncoder(w).Encode(&ffmpeg)
 		if err != nil {
 			http.Error(w, err.Error(), 500)
 			return
