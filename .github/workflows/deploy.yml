@@ -2,40 +2,40 @@ name: reversevideoapi deploy
 on: [push]
 jobs:
 
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-west-1
-      - uses: actions/setup-go@v1
-        with:
-          go-version: 1.14.x
-      - run: go get github.com/aws/aws-lambda-go/lambda
-      - run: go get github.com/stinkyfingers/lambdify
-      - run: GOOS=linux go build -o reversevideoapi main.go
-      - run: chmod 0777 reversevideoapi
-      - id: archive-build
-        uses: actions/upload-artifact@v2
-        with:
-          name: build-output
-          path: |
-            reversevideoapi
-            ffmpeg
-          retention-days: 1
+  # build:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: us-west-1
+  #     - uses: actions/setup-go@v1
+  #       with:
+  #         go-version: 1.14.x
+  #     - run: go get github.com/aws/aws-lambda-go/lambda
+  #     - run: go get github.com/stinkyfingers/lambdify
+  #     - run: GOOS=linux go build -o reversevideoapi main.go
+  #     - run: chmod 0777 reversevideoapi
+  #     - id: archive-build
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: build-output
+  #         path: |
+  #           reversevideoapi
+  #           ffmpeg
+  #         retention-days: 1
 
   terraform:
-    needs: build
+    # needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - id: download-artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: build-output
+      # - id: download-artifacts
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: build-output
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 0.12.12
@@ -60,29 +60,39 @@ jobs:
         run: terraform apply -input=false terraform.plan
         shell: bash
 
-  lambda:
-    needs: [build, terraform]
+  heroku:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - id: download-artifacts
-        uses: actions/download-artifact@v2
+      - uses: akhileshns/heroku-deploy@v3.7.8  
         with:
-          name: build-output
-      - uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-west-1
-      - id: zip
-        run: zip -j lambda.zip reversevideoapi ffmpeg
-        shell: bash
-      - id: chmod
-        run: chmod 777 lambda.zip
-        shell: bash
-      - id: update
-        run: aws lambda update-function-code --function-name reversevideoserverlambda --zip-file fileb://lambda.zip
-        shell: bash
-      - id: publish
-        run: aws lambda publish-version --function-name reversevideoserverlambda
-        shell: bash
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: "reversevideoapi"
+          heroku_email: "john_shenk@hotmail.com"
+          use_docker: true
+  # lambda:
+  #   needs: [build, terraform]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - id: download-artifacts
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: build-output
+  #     - uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: us-west-1
+  #     - id: zip
+  #       run: zip -j lambda.zip reversevideoapi ffmpeg
+  #       shell: bash
+  #     - id: chmod
+  #       run: chmod 777 lambda.zip
+  #       shell: bash
+  #     - id: update
+  #       run: aws lambda update-function-code --function-name reversevideoserverlambda --zip-file fileb://lambda.zip
+  #       shell: bash
+  #     - id: publish
+  #       run: aws lambda publish-version --function-name reversevideoserverlambda
+  #       shell: bash

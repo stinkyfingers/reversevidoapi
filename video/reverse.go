@@ -9,7 +9,6 @@ import (
 	"os/exec"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/google/uuid"
@@ -18,8 +17,10 @@ import (
 const tempFilename = "reversed.mp4"
 
 func Session() (*session.Session, error) {
-	options := session.Options{
-		Profile: "jds", // TODO remove
+	options := session.Options{}
+	// Heroku specifies port
+	if os.Getenv("PORT") == "" {
+		options.Profile = "jds"
 	}
 
 	sess, err := session.NewSessionWithOptions(options)
@@ -28,9 +29,9 @@ func Session() (*session.Session, error) {
 	}
 
 	sess.Config.WithRegion("us-west-1")
-	if os.Getenv("AWS_ACCESS_KEY_ID") != "" && os.Getenv("AWS_SECRET_ACCESS_KEY") != "" {
-		sess.Config.WithCredentials(credentials.NewStaticCredentials(os.Getenv("AWS_ACCESS_KEY_ID"), os.Getenv("AWS_SECRET_ACCESS_KEY"), os.Getenv("AWS_SESSION_TOKEN")))
-	}
+	// if os.Getenv("AWS_ACCESS_KEY_ID") != "" && os.Getenv("AWS_SECRET_ACCESS_KEY") != "" {
+	// 	sess.Config.WithCredentials(credentials.NewStaticCredentials(os.Getenv("AWS_ACCESS_KEY_ID"), os.Getenv("AWS_SECRET_ACCESS_KEY"), os.Getenv("AWS_SESSION_TOKEN")))
+	// }
 	return sess, nil
 }
 
