@@ -2,7 +2,7 @@ package video
 
 import (
 	"bytes"
-	"fmt"
+	"encoding/json"
 	"io"
 	"io/ioutil"
 	"log"
@@ -10,43 +10,38 @@ import (
 	"os/exec"
 	"path/filepath"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 const reversedDir = "reversed"
+const errorLog = "error.json"
 
-func Reverse(reader io.Reader) (string, error) {
+func Reverse(reader io.Reader, id string) error {
 	var buf bytes.Buffer
 	_, err := io.Copy(&buf, reader)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	tmp, err := ioutil.TempFile("", "")
 	if err != nil {
-		return "", err
+		return err
 	}
 	defer os.Remove(tmp.Name())
 
 	_, err = buf.WriteTo(tmp)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	if _, err = os.Stat(reversedDir); os.IsNotExist(err) {
 		err = os.Mkdir(reversedDir, os.ModePerm)
 		if err != nil {
-			return "", err
+			return err
 		}
 	}
 
-	id := fmt.Sprintf("%s.mov", uuid.New().String())
 	err = exec.Command("ffmpeg", "-i", tmp.Name(), "-vf", "reverse", filepath.Join(reversedDir, id)).Run()
-	if err != nil {
-		return "", err
-	}
-	return id, nil
+	return err
 }
 
 func GetVideo(key string) (io.ReadCloser, error) {
@@ -80,4 +75,53 @@ func cleanup() error {
 		}
 	}
 	return nil
+}
+
+func CheckStatus(key string) (bool, error) {
+	_, err := os.Stat(filepath.Join(reversedDir, key))
+	if err != nil {
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
+}
+
+func LogError(key string, errString string) error {
+	if _, err := os.Stat(errorLog); os.IsNotExist(err) {
+		_, err := os.Create(errorLog)
+		if err != nil {
+			return err
+		}
+	}
+	f, err := os.Open(errorLog)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	var errors map[string]string
+	err = json.NewDecoder(f).Decode(&errors)
+	if err != nil {
+		return err
+	}
+	errors[key] = errString
+	return json.NewEncoder(f).Encode(&errors)
+}
+
+func CheckError(key string) (string, error) {
+	if _, err := os.Stat(errorLog); os.IsNotExist(err) {
+		return "", nil
+	}
+	f, err := os.Open(errorLog)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+	var errors map[string]string
+	err = json.NewDecoder(f).Decode(&errors)
+	if err != nil {
+		return "", err
+	}
+	return errors[key], nil
 }
