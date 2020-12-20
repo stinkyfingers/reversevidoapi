@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
-	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/stinkyfingers/reversevideoapi/video"
@@ -15,11 +14,6 @@ import (
 
 type UploadResponse struct {
 	Uri string `json:"uri"`
-}
-
-type StatusResponse struct {
-	Status string `json:"status"`
-	Error  string `json:"error,omitempty"`
 }
 
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +29,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		err = video.Reverse(file, id)
 		if err != nil {
-			video.LogError(id, err.Error())
+			video.UpdateLog(id, false, err.Error())
 			return
 		}
 	}()
@@ -66,21 +60,13 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 
 func CheckVideoStatus(w http.ResponseWriter, r *http.Request) {
 	key := r.URL.Query().Get("key")
-	ok, err := video.CheckStatus(key)
+	l, err := video.CheckLog(key)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	statusError := ""
-	if !ok {
-		statusError, err = video.CheckError(key)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-	}
 
-	err = json.NewEncoder(w).Encode(&StatusResponse{Status: strconv.FormatBool(ok), Error: statusError})
+	err = json.NewEncoder(w).Encode(l)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

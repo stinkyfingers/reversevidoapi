@@ -3,6 +3,7 @@ package video
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -13,7 +14,11 @@ import (
 )
 
 const reversedDir = "reversed"
-const errorLog = "error.json"
+
+type Log struct {
+	Status bool   `json:"status"`
+	Error  string `json:"error,omitempty"`
+}
 
 func Reverse(reader io.Reader, id string) error {
 	var buf bytes.Buffer
@@ -53,7 +58,8 @@ func Reverse(reader io.Reader, id string) error {
 	}
 
 	log.Print("SIZE SAVE", info.Name(), " ", info.Size())
-	return err
+
+	return UpdateLog(id, true, "")
 }
 
 func GetVideo(key string) (io.ReadCloser, error) {
@@ -67,10 +73,14 @@ func GetVideo(key string) (io.ReadCloser, error) {
 }
 
 func Cleanup(key string) error {
-	// err := os.Remove(filepath.Join(reversedDir, key))
-	// if err != nil {
-	// 	return err
-	// }
+	err := os.Remove(filepath.Join(reversedDir, key))
+	if err != nil {
+		return err
+	}
+	err = os.Remove(filepath.Join(reversedDir, fmt.Sprintf("%s.json", key)))
+	if err != nil {
+		return err
+	}
 
 	return cleanup()
 }
@@ -91,51 +101,32 @@ func cleanup() error {
 	return nil
 }
 
-func CheckStatus(key string) (bool, error) {
-	_, err := os.Stat(filepath.Join(reversedDir, key))
+func UpdateLog(key string, status bool, errString string) error {
+	f, err := os.Open(filepath.Join(reversedDir, fmt.Sprintf("%s.json", key)))
 	if err != nil {
-		if os.IsNotExist(err) {
-			return false, nil
+		if !os.IsNotExist(err) {
+			return err
 		}
-		return false, err
-	}
-	return true, nil
-}
-
-func LogError(key string, errString string) error {
-	if _, err := os.Stat(errorLog); os.IsNotExist(err) {
-		_, err := os.Create(errorLog)
+		f, err = os.Create(filepath.Join(reversedDir, fmt.Sprintf("%s.json", key)))
 		if err != nil {
 			return err
 		}
-	}
-	f, err := os.Open(errorLog)
-	if err != nil {
-		return err
+
 	}
 	defer f.Close()
-	var errors map[string]string
-	err = json.NewDecoder(f).Decode(&errors)
-	if err != nil {
-		return err
-	}
-	errors[key] = errString
-	return json.NewEncoder(f).Encode(&errors)
+	return json.NewEncoder(f).Encode(&Log{Status: status, Error: errString})
 }
 
-func CheckError(key string) (string, error) {
-	if _, err := os.Stat(errorLog); os.IsNotExist(err) {
-		return "", nil
-	}
-	f, err := os.Open(errorLog)
+func CheckLog(key string) (*Log, error) {
+	f, err := os.Open(filepath.Join(reversedDir, fmt.Sprintf("%s.json", key)))
 	if err != nil {
-		return "", err
+		if os.IsNotExist(err) {
+			return &Log{}, nil
+		}
+		return nil, err
 	}
 	defer f.Close()
-	var errors map[string]string
-	err = json.NewDecoder(f).Decode(&errors)
-	if err != nil {
-		return "", err
-	}
-	return errors[key], nil
+	var l Log
+	err = json.NewDecoder(f).Decode(&l)
+	return &l, err
 }
