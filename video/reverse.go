@@ -49,6 +49,8 @@ func GetVideo(key string) (io.ReadCloser, error) {
 	if err != nil {
 		return nil, err
 	}
+	info, _ := os.Stat(filepath.Join(reversedDir, key))
+	log.Print("STAT", info)
 	return f, nil
 }
 

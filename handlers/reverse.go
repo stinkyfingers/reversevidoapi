@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os/exec"
 	"strconv"
@@ -52,12 +53,14 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	defer body.Close()
 	w.Header().Add("Content-Type", "video/mp4")
 	_, err = io.Copy(w, body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	log.Print("SENT")
 	go video.Cleanup(key)
 }
 
