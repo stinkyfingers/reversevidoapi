@@ -42,11 +42,13 @@ func Reverse(reader io.Reader, id string) error {
 
 	err = exec.Command("ffmpeg", "-i", tmp.Name(), "-vf", "reverse", filepath.Join(reversedDir, id)).Run()
 	if err != nil {
+		log.Print("ffmpeg err", err)
 		return err
 	}
 
 	info, err := os.Stat(filepath.Join(reversedDir, id))
 	if err != nil {
+		log.Print("STAT err", err)
 		return err
 	}
 
