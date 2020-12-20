@@ -41,8 +41,16 @@ func Reverse(reader io.Reader, id string) error {
 	}
 
 	err = exec.Command("ffmpeg", "-i", tmp.Name(), "-vf", "reverse", filepath.Join(reversedDir, id)).Run()
-	info, _ := os.Stat(filepath.Join(reversedDir, id))
-	log.Print("SIZE SAVE", info.Name(), info.Size())
+	if err != nil {
+		return err
+	}
+
+	info, err := os.Stat(filepath.Join(reversedDir, id))
+	if err != nil {
+		return err
+	}
+
+	log.Print("SIZE SAVE", info.Name(), " ", info.Size())
 	return err
 }
 
@@ -52,7 +60,7 @@ func GetVideo(key string) (io.ReadCloser, error) {
 		return nil, err
 	}
 	info, _ := os.Stat(filepath.Join(reversedDir, key))
-	log.Print("SIZE GET", info.Name(), info.Size())
+	log.Print("SIZE GET", info.Name(), " ", info.Size())
 	return f, nil
 }
 
